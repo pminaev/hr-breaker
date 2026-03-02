@@ -1,165 +1,163 @@
 # Resume HTML Generation Guide
 
-You will generate HTML for the `<body>` of a resume PDF. The wrapper HTML/CSS is already applied - you only output the body content.
+You generate HTML for the `<body>` of a resume PDF, **starting from `<div class="header-rest">`**. The wrapper already provides all CSS and renders the fixed name header above your content. Do NOT output `<html>`, `<head>`, `<body>`, or `<div class="header-name">` tags.
 
-## CSS Classes Available
+## Output Structure
 
-These classes are pre-defined and styled. Use them exactly as shown:
+Output these sections in order:
 
-### Header
+1. `header-rest` — position title + contact line + permit line
+2. Summary block
+3. EXPERIENCE section
+4. SKILLS section
+5. EDUCATION section
+
+---
+
+## 1. Header (first thing you output)
+
 ```html
-<header class="header">
-    <h1 class="name">FULL NAME</h1>
+<div class="header-rest">
+    <div class="position-title">Senior Data Analyst</div>
     <div class="contact-line">
-        <a href="mailto:email@example.com">email@example.com</a>
+        <a href="mailto:pavel@minaev.me">pavel@minaev.me</a>
         <span class="sep">|</span>
-        <span>555-123-4567</span>
+        +31627850229
         <span class="sep">|</span>
-        <a href="https://linkedin.com/in/username">LinkedIn</a>
+        Amsterdam
         <span class="sep">|</span>
-        <a href="https://github.com/username">GitHub</a>
+        <a href="https://www.linkedin.com/in/pavelminaev/">LinkedIn</a>
     </div>
-</header>
+    <div class="permit-line">EU residence &amp; work permit — no sponsorship required</div>
+</div>
 ```
 
-### Sections
+Rules:
+- `position-title`: core profession only — strip domain suffixes (e.g. "Senior Data Analyst (Payments)" → "Senior Data Analyst")
+- Contact values are **FIXED** — do not change email, phone, city, or LinkedIn URL
+- Permit line text is **FIXED** — do not change
+
+---
+
+## 2. Summary
+
+```html
+<div class="summary-block">
+    <strong>Summary:</strong> Product Analyst with 8 years of experience…
+</div>
+```
+
+- `<strong>Summary:</strong>` with colon, text continues inline on the same line
+- No trailing punctuation at end of text
+
+---
+
+## 3. Experience Section
+
 ```html
 <section class="section">
-    <h2 class="section-title">SECTION NAME</h2>
+    <h2 class="section-title">EXPERIENCE</h2>
     <div class="section-content">
-        <!-- content here -->
+        <div class="entry">
+            <div class="entry-header">
+                <div class="entry-main">
+                    <span class="entry-role">Senior Product Data Analyst</span> at <span class="company">Sweatcoin</span><span class="company-desc"> — Fitness and health app</span>
+                </div>
+                <div class="entry-date">Jul 2025 – Present</div>
+            </div>
+            <div class="role-desc">User communications, lifecycle management, personalisation</div>
+            <ul class="bullets">
+                <li>Built A/B testing culture from scratch: 1–2 → 6–7 experiments/month</li>
+                <li>Another achievement with concrete result</li>
+            </ul>
+        </div>
     </div>
 </section>
 ```
 
-### Summary
-```html
-<div class="summary">
-    Summary text goes here. Keep it concise and impactful.
-</div>
-```
+Rules:
+- Entry header format: `<span class="entry-role">Role</span> at <span class="company">Company</span><span class="company-desc"> — Short company description</span>`
+- Date separator: "–" (en-dash), not "-" (hyphen)
+- `role-desc`: one-line domain/scope description (e.g. "Payments, fraud, onboarding")
+- Max 3–4 bullets per entry
+- Bullets: capital letter, strong past-tense verb, no trailing dot
 
-### Experience/Education Entry
+---
 
-**IMPORTANT: Company and title go on ONE line, date on the right:**
+## 4. Skills Section
+
 ```html
-<div class="entry">
-    <div class="entry-header">
-        <div class="entry-main">
-            <span class="company">Company Name</span> - <span class="title">Job Title</span>
-        </div>
-        <div class="entry-date">Jan 2020 - Present</div>
+<section class="section">
+    <h2 class="section-title">SKILLS</h2>
+    <div class="section-content skills-section">
+        <p><strong>Data &amp; Analytics:</strong> A/B testing, funnel analysis, cohort analysis, retention, LTV</p>
+        <p><strong>Engineering &amp; Tools:</strong> SQL, Python, dbt, Amplitude, Looker, BigQuery</p>
+        <p><strong>Product &amp; Strategy:</strong> experiment design, metrics frameworks, stakeholder communication</p>
     </div>
-    <ul class="bullets">
-        <li>Achievement or responsibility with quantified impact</li>
-        <li>Another bullet point</li>
-    </ul>
-</div>
+</section>
 ```
 
-For education:
+- Use exactly these three group labels: **Data & Analytics** / **Engineering & Tools** / **Product & Strategy**
+- Group label is `<strong>Label:</strong>`, colon included, skills continue inline
+- No skill qualifiers ("Advanced", "proficient", "familiar with", etc.)
+
+---
+
+## 5. Education Section
+
 ```html
-<div class="entry">
-    <div class="entry-header">
-        <div class="entry-main">
-            <span class="institution">University Name</span> - <span class="degree">BS Computer Science</span>
+<section class="section">
+    <h2 class="section-title">EDUCATION</h2>
+    <div class="section-content">
+        <div class="edu-entry">
+            <div class="entry-header">
+                <div class="entry-main">
+                    <span class="company">Lomonosov Moscow State University</span> <span class="company-desc">MS in Fundamental Mathematics</span>
+                </div>
+                <div class="entry-date">2013–2019</div>
+            </div>
         </div>
-        <div class="entry-date">2016 - 2020</div>
     </div>
-    <ul class="bullets">
-        <li>GPA: 3.8/4.0, Dean's List</li>
-    </ul>
-</div>
+</section>
 ```
 
-### Skills
+- Institution: `.company` (bold)
+- Degree: `.company-desc` (normal), same line, space separator (no dash)
+- No bullets, no trailing dots
 
-Use `<strong>` for category labels (NOT markdown `**bold**`):
-```html
-<div class="skills-list">
-    <strong>Languages:</strong> Python, JavaScript, TypeScript, Go<br>
-    <strong>Frameworks:</strong> React, Node.js, FastAPI, Django<br>
-    <strong>Tools:</strong> PostgreSQL, AWS, Docker, Kubernetes
-</div>
-```
-
-### Projects
-```html
-<div class="project">
-    <span class="project-name"><a href="https://github.com/user/project">Project Name</a></span> - Brief description
-    <ul class="bullets">
-        <li>Technical detail or achievement</li>
-    </ul>
-</div>
-```
-
-### Simple Lists (Certifications, Publications)
-```html
-<ul class="simple-list">
-    <li>AWS Certified Solutions Architect, 2023</li>
-    <li>Google Cloud Professional Data Engineer, 2022</li>
-</ul>
-```
+---
 
 ## Visual Criteria
 
-- **Font size:** 11pt-14pt range (body 11pt, name 14pt) - readable at arm's length
-- **Margins:** ~0.5in all sides (already set in wrapper)
-- **Length:** Single page preferred, 2 pages max
-- **Section headers:** Clear uppercase with underline
-- **Spacing:** Consistent gaps between entries
+- **Page size:** A4, single page — use `check_content_length` to verify
+- **Font:** Arial 10pt body, 12pt name/position title (set by wrapper CSS)
+- **Section order:** Summary → Experience → Skills → Education
 
 ## Layout Guidelines
 
-1. **One page preferred** - Be concise. Remove less relevant content if needed.
-2. **Fill the page** - Aim to use the full page without overflow.
-3. **Section order** - Typical order: Summary, Experience, Education, Skills, Projects, Certifications, Publications. Adjust based on relevance to job.
-4. **Bullet points** - Max 3-5 per job. Focus on impact, not tasks. Include metrics.
-5. **Dates** - Use consistent format (e.g., "Jan 2020" or "2020").
-6. **Entry layout** - Company/title on ONE line with date right-aligned (never stacked).
+1. **One page only** — trim less relevant content if needed; use `check_content_length` before returning
+2. **Fill the page** — aim to use the full page without overflow
+3. **Bullet points** — max 3–4 per job, focus on impact with metrics
+4. **Dates** — consistent format (e.g. "Jan 2020" or "2020"), en-dash separator
 
 ## Professional Standards
 
-### Formatting
-- Consistent date format throughout (all "Jan 2020" or all "01/2020", not mixed)
-- Parallel structure in bullets (all start with past-tense verbs, or all present-tense)
-- No orphan lines (single line alone at top/bottom of page)
-
-### Language
 - No first person ("I", "my", "me")
-- Active voice, strong verbs ("Led", "Built", "Reduced" not "Was responsible for")
-- No fluff words ("various", "helped with", "assisted in")
-- No slang or casual tone
-
-### Content
-- Each bullet has: Action + Context + Result (ideally quantified)
-- No generic statements ("team player", "hard worker")
-- Specific technologies named, not "various tools"
-
-### Visual Balance
-- Balanced whitespace - no section looks cramped or empty
-- Alignment consistent (all dates right-aligned, all bullets same indent)
-- No walls of text - max 3 lines per bullet
-
-## Content Rules
-
-- Show concrete results with metrics when available
-- Feature keywords matching job requirements
-- Prioritize experiences most relevant to the role
-- Preserve original writing style where possible
-- Include all URLs from original resume
+- Active voice, strong verbs ("Led", "Built", "Reduced")
+- No fluff ("various", "helped with", "assisted in")
+- Each bullet: Action + Context + Result (quantified where possible)
 
 ## What NOT to Do
 
-- Never add `<script>` tags
-- Never add content not in the original resume
-- Never fabricate metrics, titles, or achievements
-- Never use `<html>`, `<head>`, or `<body>` tags - only body content
-- **Never use markdown syntax** (`**bold**`, `*italic*`) - use HTML (`<strong>`, `<em>`)
-- **Never put company and title on separate lines** - keep on one line with dash separator
-- **Never make text smaller than 11pt or larger than 14pt** - maintain readability
+- No `<em>`, `<i>`, or `font-style: italic` anywhere
+- No `<html>`, `<head>`, `<body>` tags — only body content
+- No `<div class="header-name">` or `<div class="name">` — the wrapper provides the name header
+- No trailing dots at line or bullet ends
+- No skill qualifiers
+- No fabricated metrics, titles, or achievements
+- No markdown syntax — HTML only
+- No `<script>` tags
 
 ## Custom Styling
 
-You CAN add a `<style>` tag at the beginning of your output for custom CSS if needed.
-Prefer using the provided classes, but custom styles are allowed for layout adjustments.
+You CAN add a `<style>` tag at the beginning of your output if you need minor CSS adjustments (e.g. reducing font size on a section that's slightly overflowing). Prefer minimal targeted overrides.

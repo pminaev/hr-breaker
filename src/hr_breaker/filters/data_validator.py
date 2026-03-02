@@ -11,11 +11,9 @@ def validate_html(html: str) -> tuple[bool, list[str]]:
     """Check HTML body content for validity."""
     issues = []
 
-    # Must have header with name
-    if not re.search(r'<header[^>]*class="header"', html):
-        issues.append("Missing header element with class='header'")
-    elif not re.search(r'<h1[^>]*class="name"[^>]*>', html):
-        issues.append("Missing name (h1 with class='name') in header")
+    # Must have header-rest (name is fixed in wrapper, LLM outputs header-rest)
+    if not re.search(r'class="header-rest"', html):
+        issues.append("Missing header-rest element (expected <div class=\"header-rest\">)")
 
     # Must have at least one section
     if not re.search(r'<section[^>]*class="section"', html):
