@@ -14,8 +14,8 @@ def sanitize_filename(name: str) -> str:
 class PDFStorage:
     """Storage for generated PDFs - folder-based, no index file."""
 
-    def __init__(self):
-        self.output_dir = get_settings().output_dir
+    def __init__(self, output_dir: Path | None = None):
+        self.output_dir = output_dir if output_dir is not None else get_settings().output_dir
         self.output_dir.mkdir(parents=True, exist_ok=True)
 
     def generate_path(

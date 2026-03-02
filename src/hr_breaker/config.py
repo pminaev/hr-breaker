@@ -93,6 +93,10 @@ class Settings(BaseSettings):
     default_language: str = "en"
     translation_max_iterations: int = 2
 
+    # Cover letter settings
+    cl_max_iterations: int = 3
+    filter_cl_reviewer_threshold: float = 0.6
+
     # Retry settings
     retry_max_attempts: int = 5
     retry_max_wait: float = 60.0

@@ -55,7 +55,7 @@ class HTMLRenderer(BaseRenderer):
 
     _weasyprint_imported = False
 
-    def __init__(self):
+    def __init__(self, template_name: str = "resume_wrapper.html"):
         self._ensure_weasyprint()
         self.env = Environment(
             loader=FileSystemLoader(TEMPLATE_DIR),
@@ -63,7 +63,7 @@ class HTMLRenderer(BaseRenderer):
         )
         from weasyprint.text.fonts import FontConfiguration
         self.font_config = FontConfiguration()
-        self._wrapper_html = (TEMPLATE_DIR / "resume_wrapper.html").read_text(encoding="utf-8")
+        self._wrapper_html = (TEMPLATE_DIR / template_name).read_text(encoding="utf-8")
 
     @classmethod
     def _ensure_weasyprint(cls):

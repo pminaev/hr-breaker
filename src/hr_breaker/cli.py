@@ -11,9 +11,10 @@ from hr_breaker.models import (
     GeneratedPDF,
     ResumeSource,
     SUPPORTED_LANGUAGES,
-    get_language, 
+    get_language,
 )
 from hr_breaker.orchestration import optimize_for_job
+from hr_breaker.orchestration_cl import generate_cover_letter_for_job, save_cover_letter
 from hr_breaker.services import (
     PDFStorage,
     scrape_job_posting,
@@ -211,6 +212,122 @@ def optimize(
     pdf_storage.save_record(pdf_record)
 
     click.echo(f"PDF saved: {output}")
+
+
+@cli.command("cover-letter")
+@click.argument("resume_path", type=click.Path(exists=True, path_type=Path))
+@click.argument("job_input")
+@click.option(
+    "--output",
+    "-o",
+    type=click.Path(path_type=Path),
+    default=None,
+)
+@click.option(
+    "--max-iterations", "-n", type=int, default=None, envvar="HR_BREAKER_CL_MAX_ITERATIONS"
+)
+@click.option(
+    "--debug",
+    "-d",
+    is_flag=True,
+    help="Save all iterations as HTML to output/cl/debug/",
+    envvar="HR_BREAKER_DEBUG",
+)
+@click.option(
+    "--no-shame",
+    is_flag=True,
+    help="Lenient hallucination mode",
+    envvar="HR_BREAKER_NO_SHAME",
+)
+@click.option(
+    "--info",
+    type=str,
+    default=None,
+    help="Extra context: company research, things to highlight (treated as ground truth)",
+)
+def cover_letter(
+    resume_path: Path,
+    job_input: str,
+    output: Path | None,
+    max_iterations: int | None,
+    debug: bool,
+    no_shame: bool,
+    info: str | None,
+):
+    """Generate a cover letter for a job posting.
+
+    RESUME_PATH: Path to resume file (.tex, .md, .txt, .pdf, etc.)
+    JOB_INPUT: URL or path to file with job description
+    """
+    resume_content = load_resume_content(resume_path)
+    job_text = _get_job_text(job_input)
+
+    debug_dir: Path | None = None
+
+    def on_iteration(i, cl, validation):
+        status = "PASS" if validation.passed else "FAIL"
+        scores = ", ".join(
+            f"{r.filter_name}:{r.score:.2f}/{r.threshold:.2f}"
+            for r in validation.results
+        )
+        click.echo(f"  Iteration {i + 1}: {status} [{scores}]")
+
+        if debug and debug_dir and cl.html:
+            debug_html = debug_dir / f"iteration_{i + 1}.html"
+            debug_html.write_text(cl.html, encoding="utf-8")
+            click.echo(f"    Debug: saved {debug_html}")
+
+    async def run():
+        nonlocal debug_dir
+        first_name, last_name = await extract_name(resume_content)
+        click.echo(f"Resume: {first_name or 'Unknown'} {last_name or ''}")
+
+        job = await parse_job_posting(job_text)
+        click.echo(f"Job: {job.title} at {job.company}")
+
+        if debug:
+            cl_dir = Path("output") / "cl"
+            cl_dir.mkdir(parents=True, exist_ok=True)
+            debug_dir = cl_dir / f"debug_{job.company.lower().replace(' ', '_')}_{job.title.lower().replace(' ', '_')}"
+            debug_dir.mkdir(parents=True, exist_ok=True)
+
+        shame_mode = " [no-shame]" if no_shame else ""
+        click.echo(f"Generating cover letter{shame_mode}...")
+
+        source = ResumeSource(
+            content=resume_content,
+            first_name=first_name,
+            last_name=last_name,
+        )
+        cl, validation, job_parsed = await generate_cover_letter_for_job(
+            source,
+            max_iterations=max_iterations,
+            on_iteration=on_iteration,
+            job=job,
+            no_shame=no_shame,
+            user_info=info,
+        )
+        return first_name, last_name, cl, validation, job_parsed
+
+    first_name, last_name, cl, validation, job = asyncio.run(run())
+
+    if not validation.passed:
+        click.echo("Warning: Not all filters passed")
+
+    if not cl.pdf_bytes:
+        raise click.ClickException("No PDF generated (render failed)")
+
+    if output is not None:
+        output.parent.mkdir(parents=True, exist_ok=True)
+        output.write_bytes(cl.pdf_bytes)
+        txt_path = output.with_suffix(".txt")
+        txt_path.write_text(cl.txt_text or "", encoding="utf-8")
+        click.echo(f"PDF saved: {output}")
+        click.echo(f"TXT saved: {txt_path}")
+    else:
+        pdf_path, txt_path = save_cover_letter(cl, first_name, last_name, job)
+        click.echo(f"PDF saved: {pdf_path}")
+        click.echo(f"TXT saved: {txt_path}")
 
 
 @cli.command("list")

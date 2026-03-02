@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Cover Letter</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 0.6in 0.7in 0.6in 0.7in;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 11pt;
+            line-height: 1.5;
+            color: #000;
+        }
+
+        a {
+            color: #1155CC;
+            text-decoration: underline;
+        }
+
+        /* Sender block (name + contacts, top of letter) */
+        .cl-sender {
+            margin-bottom: 18pt;
+        }
+
+        .cl-sender-name {
+            font-size: 13pt;
+            font-weight: bold;
+            margin-bottom: 2pt;
+        }
+
+        .cl-sender-contact {
+            font-size: 10pt;
+            color: #333;
+        }
+
+        /* Date line */
+        .cl-date {
+            font-size: 11pt;
+            margin-bottom: 14pt;
+            color: #333;
+        }
+
+        /* Opening paragraph */
+        .cl-opening {
+            margin-bottom: 12pt;
+        }
+
+        /* Body paragraph */
+        .cl-body {
+            margin-bottom: 12pt;
+        }
+
+        /* "What I bring" bullet list */
+        .cl-bullets {
+            margin-bottom: 12pt;
+            padding-left: 0;
+            list-style: none;
+        }
+
+        .cl-bullets li {
+            position: relative;
+            padding-left: 14pt;
+            margin-bottom: 4pt;
+            font-size: 11pt;
+            line-height: 1.45;
+        }
+
+        .cl-bullets li::before {
+            content: "\2022";
+            position: absolute;
+            left: 0;
+            color: #000;
+        }
+
+        /* Optional paragraph (company-specific note) */
+        .cl-optional {
+            margin-bottom: 12pt;
+        }
+
+        /* Closing */
+        .cl-closing {
+            margin-bottom: 14pt;
+        }
+
+        /* Signature block */
+        .cl-signature {
+            margin-top: 6pt;
+        }
+    </style>
+</head>
+<body>
+{{BODY}}
+</body>
+</html>

@@ -1,4 +1,5 @@
 from .resume import ResumeSource, OptimizedResume
+from .cover_letter import GeneratedCoverLetter
 from .resume_data import (
     ResumeData,
     RenderResult,
@@ -15,6 +16,7 @@ from .language import Language, SUPPORTED_LANGUAGES, DEFAULT_LANGUAGE, get_langu
 __all__ = [
     "ResumeSource",
     "OptimizedResume",
+    "GeneratedCoverLetter",
     "ResumeData",
     "RenderResult",
     "ContactInfo",
