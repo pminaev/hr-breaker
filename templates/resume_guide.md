@@ -90,14 +90,15 @@ Rules:
 <section class="section">
     <h2 class="section-title">SKILLS</h2>
     <div class="section-content skills-section">
-        <p><strong>Data &amp; Analytics:</strong> A/B testing, funnel analysis, cohort analysis, retention, LTV</p>
-        <p><strong>Engineering &amp; Tools:</strong> SQL, Python, dbt, Amplitude, Looker, BigQuery</p>
-        <p><strong>Product &amp; Strategy:</strong> experiment design, metrics frameworks, stakeholder communication</p>
+        <p><strong>Analytics:</strong> A/B testing, funnel analysis, cohort analysis, retention, LTV</p>
+        <p><strong>Programming:</strong> SQL, Python, dbt, Spark</p>
+        <p><strong>Tools:</strong> Amplitude, Looker, BigQuery, Airflow</p>
+        <p><strong>Other:</strong> experiment design, metrics frameworks, stakeholder communication</p>
     </div>
 </section>
 ```
 
-- Use exactly these three group labels: **Data & Analytics** / **Engineering & Tools** / **Product & Strategy**
+- Use any number of groups with any names that best fit the role (e.g. "Analytics", "Programming", "Tools", "Other", or any other grouping)
 - Group label is `<strong>Label:</strong>`, colon included, skills continue inline
 - No skill qualifiers ("Advanced", "proficient", "familiar with", etc.)
 
@@ -117,12 +118,21 @@ Rules:
                 <div class="entry-date">2013–2019</div>
             </div>
         </div>
+        <div class="edu-entry">
+            <div class="entry-header">
+                <div class="entry-main">
+                    <span class="company">GoPractice</span> <span class="company-desc">Data-driven and Growth Product Management</span>
+                </div>
+                <div class="entry-date">2021–2022</div>
+            </div>
+        </div>
     </div>
 </section>
 ```
 
-- Institution: `.company` (bold)
-- Degree: `.company-desc` (normal), same line, space separator (no dash)
+- Institution/provider: `.company` (bold) — applies to universities, online platforms, certification bodies, etc.
+- Degree, course, or programme name: `.company-desc` (normal), same line, space separator (no dash)
+- Include all relevant education: university degrees, online courses, professional certifications, etc.
 - No bullets, no trailing dots
 
 ---
