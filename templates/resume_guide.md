@@ -20,13 +20,13 @@ Output these sections in order:
 <div class="header-rest">
     <div class="position-title">Senior Data Analyst</div>
     <div class="contact-line">
-        <a href="mailto:pavel@minaev.me">pavel@minaev.me</a>
+        <a href="mailto:name@lastname.com">name@lastname.com</a>
         <span class="sep">|</span>
-        +31627850229
+        +31000000000
         <span class="sep">|</span>
-        Amsterdam
+        City
         <span class="sep">|</span>
-        <a href="https://www.linkedin.com/in/pavelminaev/">LinkedIn</a>
+        <a href="https://www.linkedin.com/in/yourhandle/">LinkedIn</a>
     </div>
     <div class="permit-line">EU residence &amp; work permit — no sponsorship required</div>
 </div>
@@ -61,7 +61,7 @@ Rules:
         <div class="entry">
             <div class="entry-header">
                 <div class="entry-main">
-                    <span class="entry-role">Senior Product Data Analyst</span> at <span class="company">Sweatcoin</span><span class="company-desc"> — Fitness and health app</span>
+                    <span class="entry-role">Your Role Title</span> at <span class="company">Company Name</span><span class="company-desc"> — Short company description</span>
                 </div>
                 <div class="entry-date">Jul 2025 – Present</div>
             </div>
@@ -113,17 +113,17 @@ Rules:
         <div class="edu-entry">
             <div class="entry-header">
                 <div class="entry-main">
-                    <span class="company">Lomonosov Moscow State University</span> <span class="company-desc">MS in Fundamental Mathematics</span>
+                    <span class="company">University Name</span> <span class="company-desc">Your Degree</span>
                 </div>
-                <div class="entry-date">2013–2019</div>
+                <div class="entry-date">YYYY–YYYY</div>
             </div>
         </div>
         <div class="edu-entry">
             <div class="entry-header">
                 <div class="entry-main">
-                    <span class="company">GoPractice</span> <span class="company-desc">Data-driven and Growth Product Management</span>
+                    <span class="company">Course or Certification Provider</span> <span class="company-desc">Course or Certification Name</span>
                 </div>
-                <div class="entry-date">2021–2022</div>
+                <div class="entry-date">YYYY–YYYY</div>
             </div>
         </div>
     </div>

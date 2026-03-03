@@ -41,6 +41,12 @@ output/
 # Run directories (resume.txt + job.txt input files, generated PDFs)
 files/
 
+# Personal data files (fill these in locally, do not commit)
+resume.txt
+job.txt
+Signature.png
+PERSONAL.md
+
 # IDE
 .idea/
 .vscode/
