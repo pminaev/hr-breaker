@@ -112,10 +112,21 @@ class HTMLRenderer(BaseRenderer):
         Args:
             html_body: HTML content for the <body> (no wrapper needed)
         """
+        import base64
+
         from weasyprint import HTML
 
         # Wrap LLM's body content with our template
         html_content = self._wrapper_html.replace("{{BODY}}", html_body)
+
+        # Inject signature as base64 data URI if the template uses {{SIGNATURE}}
+        if "{{SIGNATURE}}" in html_content:
+            sig_path = TEMPLATE_DIR.parent / "Signature.png"
+            if sig_path.exists():
+                sig_data = "data:image/png;base64," + base64.b64encode(sig_path.read_bytes()).decode()
+            else:
+                sig_data = ""
+            html_content = html_content.replace("{{SIGNATURE}}", sig_data)
 
         # Render with WeasyPrint
         html = HTML(string=html_content, base_url=str(TEMPLATE_DIR))

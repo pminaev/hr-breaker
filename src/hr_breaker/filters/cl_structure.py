@@ -6,7 +6,7 @@ from hr_breaker.models import FilterResult, JobPosting, OptimizedResume, ResumeS
 # NOT decorated with @FilterRegistry.register — used only in orchestration_cl.py
 
 REQUIRED_CLASSES = ["cl-opening", "cl-body", "cl-bullets", "cl-closing"]
-SENDER_CLASSES = ["cl-sender", "cl-date"]
+SENDER_CLASSES = ["cl-header-name", "cl-header-role", "cl-sender-contact"]
 
 
 class CLStructureValidator(BaseFilter):

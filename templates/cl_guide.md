@@ -11,14 +11,16 @@ OUTPUT: Generate HTML for the `<body>` of a cover letter PDF. Do NOT include `<h
 The output must contain these sections in this order:
 
 ```html
-<!-- Sender block: name + contact info -->
-<div class="cl-sender">
-    <div class="cl-sender-name">First Last</div>
-    <div class="cl-sender-contact">email · LinkedIn · location (city only)</div>
+<!-- Header block: name, role, contacts -->
+<div class="cl-header">
+    <div class="cl-header-name">FIRST LAST</div>
+    <div class="cl-header-role">Senior Product Analyst</div>
+    <div class="cl-sender-contact">
+        <a href="mailto:email@example.com">email@example.com</a><span class="sep">|</span>tel.: +XX XXXXXXXXX<span class="sep">|</span><a href="https://linkedin.com/in/username">LinkedIn</a>
+    </div>
 </div>
 
-<!-- Date -->
-<div class="cl-date">Month YYYY</div>
+<hr class="cl-divider">
 
 <!-- Opening paragraph: lead with what the company does/builds -->
 <p class="cl-opening">...</p>
@@ -39,12 +41,22 @@ The output must contain these sections in this order:
 
 <!-- Closing: one direct sentence inviting a conversation -->
 <p class="cl-closing">...</p>
-
-<!-- Signature -->
-<div class="cl-signature">First Last</div>
 ```
 
-All six class names (`cl-sender`, `cl-date`, `cl-opening`, `cl-body`, `cl-bullets`, `cl-closing`) are required. `cl-optional` is optional — omit it entirely if unused.
+**Important:** Do NOT add "Best regards," or your name after `cl-closing`. Do NOT include a `cl-signature` div. The template injects the sign-off and handwritten signature automatically.
+
+All five required class names (`cl-header`, `cl-opening`, `cl-body`, `cl-bullets`, `cl-closing`) must be present. `cl-optional` is optional — omit it entirely if unused.
+
+---
+
+## Header Rules
+
+- **Name (`cl-header-name`)**: Extract from the resume. Write in ALL CAPS.
+- **Role (`cl-header-role`)**: Use the job title exactly as stated in the vacancy, but strip any domain or team qualifier after a dash or hyphen. Examples:
+  - "Senior Product Analyst" → "Senior Product Analyst" (keep as-is)
+  - "Product Analyst – Offer Platform" → "Product Analyst"
+  - "Data Analyst - Growth & Monetization" → "Data Analyst"
+- **Contacts (`cl-sender-contact`)**: Extract email, phone, and LinkedIn URL from the resume. Format as: clickable email | phone | clickable LinkedIn. Use `<span class="sep">|</span>` between items.
 
 ---
 
@@ -101,7 +113,7 @@ English level: C1. Write for a smart, non-native reader:
 - **Body (`cl-body`)**: Specific numbers and impact only. No vague descriptions.
 - **Bullets (`cl-bullets`)**: Each bullet = one concrete skill or experience + a specific result or context. 3-4 bullets. Not generic traits.
 - **Optional (`cl-optional`)**: One sentence, specific — about the company, team, or a product detail. Use only if the user passed in additional context about the company. Omit the entire block otherwise.
-- **Closing (`cl-closing`)**: One direct sentence inviting a conversation.
+- **Closing (`cl-closing`)**: One direct sentence inviting a conversation. Do NOT follow it with "Best regards" or your name — those are added by the template.
 
 ---
 

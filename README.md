@@ -24,6 +24,10 @@ Resume optimization and cover letter generation tool — transforms any resume i
 - **Style-enforced** - Rejects em-dashes, contractions, semicolons, and AI-sounding phrases
 - **Word count guardrails** - Hard 250–450 word limit enforced by a dedicated filter
 - **Structure validated** - Required sections (opening, body, closing) checked before LLM review
+- **Matches CV layout** - Same font, size, and spacing as the CV; header with name, role, and contact line
+- **Auto role cleanup** - Job title domain suffixes stripped automatically (e.g. "Analyst – Offer Platform" → "Analyst")
+- **Clickable contacts** - Email and LinkedIn rendered as colored, underlined links
+- **Handwritten signature** - `Signature.png` from the project root is embedded automatically at the end
 - **PDF + TXT output** - Saved to `output/cl/` alongside the PDF
 
 ### Shared

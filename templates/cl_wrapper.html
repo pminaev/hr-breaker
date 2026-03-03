@@ -6,7 +6,7 @@
     <style>
         @page {
             size: A4;
-            margin: 0.6in 0.7in 0.6in 0.7in;
+            margin: 0.35in 0.55in 0.45in 0.55in;
         }
 
         * {
@@ -17,62 +17,83 @@
 
         body {
             font-family: Arial, Helvetica, sans-serif;
-            font-size: 11pt;
-            line-height: 1.5;
+            font-size: 10.5pt;
+            line-height: 1.45;
             color: #000;
         }
 
         a {
-            color: #1155CC;
-            text-decoration: underline;
+            color: #000;
+            text-decoration: none;
         }
 
-        /* Sender block (name + contacts, top of letter) */
-        .cl-sender {
-            margin-bottom: 18pt;
+        /* ── Header ─────────────────────────────────────────── */
+
+        .cl-header {
+            margin-bottom: 6pt;
         }
 
-        .cl-sender-name {
-            font-size: 13pt;
+        .cl-header-name {
+            font-size: 12pt;
             font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.3pt;
             margin-bottom: 2pt;
+        }
+
+        .cl-header-role {
+            font-size: 11pt;
+            font-weight: bold;
+            margin-bottom: 3pt;
         }
 
         .cl-sender-contact {
             font-size: 10pt;
-            color: #333;
+            color: #000;
+            margin-bottom: 0;
         }
 
-        /* Date line */
-        .cl-date {
-            font-size: 11pt;
-            margin-bottom: 14pt;
-            color: #333;
+        .cl-sender-contact a {
+            color: #1155CC;
+            text-decoration: underline;
         }
 
-        /* Opening paragraph */
+        .cl-sender-contact .sep {
+            margin: 0 4pt;
+            color: #000;
+        }
+
+        /* ── Divider ─────────────────────────────────────────── */
+
+        .cl-divider {
+            border: none;
+            border-top: 0.75pt solid #000;
+            margin-top: 8pt;
+            margin-bottom: 16pt;
+        }
+
+        /* ── Body sections ───────────────────────────────────── */
+
         .cl-opening {
-            margin-bottom: 12pt;
+            margin-bottom: 11pt;
         }
 
-        /* Body paragraph */
         .cl-body {
-            margin-bottom: 12pt;
+            margin-bottom: 11pt;
         }
 
-        /* "What I bring" bullet list */
         .cl-bullets {
-            margin-bottom: 12pt;
+            margin-bottom: 11pt;
             padding-left: 0;
             list-style: none;
         }
 
         .cl-bullets li {
             position: relative;
-            padding-left: 14pt;
+            padding-left: 13pt;
             margin-bottom: 4pt;
-            font-size: 11pt;
-            line-height: 1.45;
+            font-size: 10.5pt;
+            line-height: 1.4;
         }
 
         .cl-bullets li::before {
@@ -82,23 +103,35 @@
             color: #000;
         }
 
-        /* Optional paragraph (company-specific note) */
         .cl-optional {
-            margin-bottom: 12pt;
+            margin-bottom: 11pt;
         }
 
-        /* Closing */
         .cl-closing {
             margin-bottom: 14pt;
         }
 
-        /* Signature block */
-        .cl-signature {
-            margin-top: 6pt;
+        /* ── Sign-off + signature ────────────────────────────── */
+
+        .cl-signoff {
+            margin-bottom: 6pt;
+        }
+
+        .cl-sig-block {
+            margin-top: 2pt;
+        }
+
+        .cl-sig-img {
+            height: 42pt;
+            display: block;
         }
     </style>
 </head>
 <body>
 {{BODY}}
+<p class="cl-signoff">Best regards,</p>
+<div class="cl-sig-block">
+    <img src="{{SIGNATURE}}" class="cl-sig-img" alt="">
+</div>
 </body>
 </html>
