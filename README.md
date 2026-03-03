@@ -71,7 +71,15 @@ uv sync
 # Configure
 cp .env.example .env
 # Edit .env and add your GOOGLE_API_KEY
+```
 
+**Add your personal data to templates:**
+
+1. Fill in your details in `PERSONAL.md` (name, email, phone, city, LinkedIn, permit line)
+2. Open Claude Code in the project directory and run:
+   > "Read PERSONAL.md and update all template files with my personal data following the instructions in that file."
+
+```bash
 # Run web UI
 uv run streamlit run src/hr_breaker/main.py
 ```
