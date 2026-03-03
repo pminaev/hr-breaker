@@ -34,7 +34,7 @@ Resume optimization and cover letter generation tool — transforms any resume i
 
 ### Shared
 
-- **Web UI + CLI** - Streamlit dashboard or command-line
+- **CLI** - Command-line interface
 - **Debug mode** - Inspect optimization iterations
 - **Cross-platform** - Works on macOS, Linux, and Windows
 
@@ -79,21 +79,7 @@ cp .env.example .env
 2. Open Claude Code in the project directory and run:
    > "Read PERSONAL.md and update all template files with my personal data following the instructions in that file."
 
-```bash
-# Run web UI
-uv run streamlit run src/hr_breaker/main.py
-```
-
 ## Usage
-
-### Web UI
-
-Launch with `uv run streamlit run src/hr_breaker/main.py`
-
-1. Paste or upload resume
-2. Enter job URL or description
-3. Click optimize
-4. Download PDF
 
 ### CLI — Resume
 
@@ -179,7 +165,6 @@ src/hr_breaker/
 ├── models/              # Pydantic data models (incl. GeneratedCoverLetter)
 ├── orchestration.py     # CV optimization loop
 ├── orchestration_cl.py  # Cover letter generation loop
-├── main.py              # Streamlit UI
 └── cli.py               # Click CLI
 ```
 

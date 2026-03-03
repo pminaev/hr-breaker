@@ -28,13 +28,13 @@ Tool for optimizing resumes and generating cover letters for job postings, with 
 
 ## Architecture
 
-1. Streamlit frontend
+1. Click CLI
 2. Pydantic-AI LLM agent framework + pydantic-ai-litellm (any LLM provider)
 3. Default: Google Gemini models (configurable to OpenAI, Anthropic, etc. via litellm)
 4. Modular filter system - easy to add new checks
 5. Resume caching - input once, apply to many jobs
 
-Python: 3.10–3.13 (3.14+ breaks asyncio in streamlit thread pools)
+Python: 3.10–3.13
 Package manager: uv
 Always use venv: `source .venv/bin/activate`
 Unit-tests: pytest
@@ -65,7 +65,6 @@ src/hr_breaker/
 ├── utils/               # Helpers (retry with backoff, HTML text extraction)
 ├── orchestration.py     # CV optimization loop
 ├── orchestration_cl.py  # Cover letter generation loop
-├── main.py              # Streamlit UI
 ├── cli.py               # Click CLI
 ├── config.py            # Settings (pydantic-settings BaseSettings, auto-reads env vars)
 └── litellm_patch.py     # Monkey-patch for pydantic-ai-litellm vision support
@@ -123,9 +122,6 @@ To add CL filter: subclass `BaseFilter`, add to `CL_FILTERS` list in `orchestrat
 
 ### Commands
 ```bash
-# Web UI
-uv run streamlit run src/hr_breaker/main.py
-
 # CV optimization
 uv run hr-breaker optimize resume.txt https://example.com/job
 uv run hr-breaker optimize resume.txt https://example.com/job -l ru  # optimize, then translate to Russian
