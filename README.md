@@ -1,10 +1,12 @@
 # HR-Breaker
 
-Resume optimization tool that transforms any resume into a job-specific, ATS-friendly PDF.
+Resume optimization and cover letter generation tool — transforms any resume into a job-specific, ATS-friendly PDF, and writes tailored cover letters that pass quality filters.
 
 ![Python 3.10–3.13](https://img.shields.io/badge/python-3.10--3.13-blue.svg)
 
 ## Features
+
+### Resume optimization
 
 - **Any format in** - LaTeX, plain text, markdown, HTML, PDF
 - **Optimized PDF out** - Single-page, professionally formatted
@@ -15,11 +17,24 @@ Resume optimization tool that transforms any resume into a job-specific, ATS-fri
 - **Multi-filter validation** - ATS simulation, keyword matching, structure checks
 - **User instructions** - Guide the optimizer with extra context ("Focus on Python", "Add K8s cert")
 - **Multi-language output** - Optimize in English, then translate (e.g. `-l ru` for Russian)
+
+### Cover letter generation
+
+- **Resume-grounded** - Writes from your actual experience, no fabrication
+- **Style-enforced** - Rejects em-dashes, contractions, semicolons, and AI-sounding phrases
+- **Word count guardrails** - Hard 250–450 word limit enforced by a dedicated filter
+- **Structure validated** - Required sections (opening, body, closing) checked before LLM review
+- **PDF + TXT output** - Saved to `output/cl/` alongside the PDF
+
+### Shared
+
 - **Web UI + CLI** - Streamlit dashboard or command-line
 - **Debug mode** - Inspect optimization iterations
 - **Cross-platform** - Works on macOS, Linux, and Windows
 
 ## How It Works
+
+### Resume optimization
 
 1. Upload resume in any text format (content source only)
 2. Provide job posting URL or text description
@@ -27,6 +42,15 @@ Resume optimization tool that transforms any resume into a job-specific, ATS-fri
 4. System runs internal filters (ATS simulation, keyword matching, hallucination detection)
 5. If filters reject, regenerates using feedback
 6. When all checks pass, renders HTML→PDF via WeasyPrint
+
+### Cover letter generation
+
+1. Provide resume + job posting (same inputs as CV optimization)
+2. LLM generates an HTML cover letter grounded in your actual experience
+3. Structural, style, and word-count filters run in parallel
+4. LLM reviewer runs only if structural filters pass (saves API calls)
+5. If any filter rejects, regenerates with feedback
+6. Final output: PDF + plain-text file saved to `output/cl/`
 
 ## Quick Start
 
@@ -53,7 +77,7 @@ Launch with `uv run streamlit run src/hr_breaker/main.py`
 3. Click optimize
 4. Download PDF
 
-### CLI
+### CLI — Resume
 
 ```bash
 # From URL
@@ -74,14 +98,40 @@ uv run hr-breaker optimize resume.txt https://example.com/job -l ru
 # Lenient mode - relaxes content constraints but still prevents fabricating experience. Use with caution!
 uv run hr-breaker optimize resume.txt job.txt --no-shame
 
+# Save to a specific directory (auto-generated filename)
+uv run hr-breaker optimize resume.txt job.txt --output-dir /path/to/dir
+
 # List generated PDFs
 uv run hr-breaker list
 ```
 
+### CLI — Cover Letter
+
+```bash
+# From URL
+uv run hr-breaker cover-letter resume.txt https://example.com/job
+
+# From job description file
+uv run hr-breaker cover-letter resume.txt job.txt
+
+# Extra context - company research, things to highlight (treated as ground truth)
+uv run hr-breaker cover-letter resume.txt job.txt --info "They use dbt + Looker; mention my BI migration project"
+
+# Debug mode (saves HTML iterations)
+uv run hr-breaker cover-letter resume.txt job.txt -d
+
+# Lenient hallucination mode
+uv run hr-breaker cover-letter resume.txt job.txt --no-shame
+
+# Save to a specific directory (auto-generated filename, no extra cl/ subdir)
+uv run hr-breaker cover-letter resume.txt job.txt --output-dir /path/to/dir
+```
+
 ## Output
 
-- Final PDFs: `output/<name>_<company>_<role>.pdf`
-- Debug iterations: `output/debug_<company>_<role>/`
+- Resume PDFs: `output/<name>_<company>_<role>.pdf`
+- Cover letters: `output/cl/<name>_<company>_<role>.pdf` + `.txt`
+- Debug iterations: `output/debug_<company>_<role>/` (CV) or `output/cl/debug_<company>_<role>/` (CL)
 - Records: `output/index.json`
 
 ## Configuration
@@ -94,17 +144,18 @@ Copy `.env.example` to `.env` and set `GOOGLE_API_KEY` (required). See `.env.exa
 
 ```
 src/hr_breaker/
-├── agents/          # Pydantic-AI agents (optimizer, reviewer, etc.)
-├── filters/         # Validation plugins (ATS, keywords, hallucination)
-├── services/        # Rendering, scraping, caching
-│   └── scrapers/    # Job scraper implementations
-├── models/          # Pydantic data models
-├── orchestration.py # Core optimization loop
-├── main.py          # Streamlit UI
-└── cli.py           # Click CLI
+├── agents/              # Pydantic-AI agents (optimizer, reviewer, cl_generator, cl_reviewer, etc.)
+├── filters/             # Validation plugins (ATS, keywords, hallucination, CL-specific)
+├── services/            # Rendering, scraping, caching
+│   └── scrapers/        # Job scraper implementations
+├── models/              # Pydantic data models (incl. GeneratedCoverLetter)
+├── orchestration.py     # CV optimization loop
+├── orchestration_cl.py  # Cover letter generation loop
+├── main.py              # Streamlit UI
+└── cli.py               # Click CLI
 ```
 
-**Filters** (run by priority):
+**CV filters** (run by priority):
 
 - 0: ContentLengthChecker - Size check
 - 1: DataValidator - HTML structure validation
@@ -113,6 +164,16 @@ src/hr_breaker/
 - 5: LLMChecker - Visual formatting check and LLM-based ATS simulation
 - 6: VectorSimilarityMatcher - Semantic similarity
 - 7: AIGeneratedChecker - Detect AI-sounding text
+
+**CL filters** (explicit list, never registered in FilterRegistry):
+
+- 0: ContentLengthChecker - 1-page check (shared with CV)
+- 1: CLStructureValidator - Required HTML sections (opening, body, closing)
+- 2: StyleChecker - Rejects em-dashes, contractions, semicolons, forbidden phrases
+- 3: HallucinationChecker - Lenient mode by default (shared with CV)
+- 4: WordCountChecker - 250–450 word hard limit
+- 7: AIGeneratedChecker - AI text detection (shared with CV)
+- CLReviewer - LLM quality filter, runs only after structural filters pass
 
 ## Development
 

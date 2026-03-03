@@ -82,10 +82,17 @@ OUTPUT_DIR = Path("output")
     default=None,
     help="Instructions for the optimizer (extra experience, emphasis areas)",
 )
+@click.option(
+    "--output-dir",
+    type=click.Path(path_type=Path),
+    default=None,
+    help="Output directory for PDF (auto-generated filename). Ignored if --output is set.",
+)
 def optimize(
     resume_path: Path,
     job_input: str,
     output: Path | None,
+    output_dir: Path | None,
     max_iterations: int | None,
     debug: bool,
     seq: bool,
@@ -103,7 +110,8 @@ def optimize(
     # Get job text (sync - may need user interaction for Cloudflare)
     job_text = _get_job_text(job_input)
 
-    pdf_storage = PDFStorage()
+    effective_output_dir = output_dir if output_dir is not None else OUTPUT_DIR
+    pdf_storage = PDFStorage(output_dir=effective_output_dir)
     debug_dir: Path | None = None
 
     def on_iteration(i, optimized, validation):
@@ -184,17 +192,13 @@ def optimize(
         click.echo("Warning: Not all filters passed")
 
     # Save final PDF (reuse bytes from last iteration)
-    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     if output is None:
-        output = (
-            OUTPUT_DIR
-            / pdf_storage.generate_path(
-                first_name,
-                last_name,
-                job.company,
-                job.title,
-                lang_code=lang_code,
-            ).name
+        output = pdf_storage.generate_path(
+            first_name,
+            last_name,
+            job.company,
+            job.title,
+            lang_code=lang_code,
         )
 
     if not optimized.pdf_bytes:
@@ -245,10 +249,17 @@ def optimize(
     default=None,
     help="Extra context: company research, things to highlight (treated as ground truth)",
 )
+@click.option(
+    "--output-dir",
+    type=click.Path(path_type=Path),
+    default=None,
+    help="Output directory for PDF+TXT (auto-generated filename). Ignored if --output is set.",
+)
 def cover_letter(
     resume_path: Path,
     job_input: str,
     output: Path | None,
+    output_dir: Path | None,
     max_iterations: int | None,
     debug: bool,
     no_shame: bool,
@@ -286,7 +297,7 @@ def cover_letter(
         click.echo(f"Job: {job.title} at {job.company}")
 
         if debug:
-            cl_dir = Path("output") / "cl"
+            cl_dir = output_dir if output_dir is not None else Path("output") / "cl"
             cl_dir.mkdir(parents=True, exist_ok=True)
             debug_dir = cl_dir / f"debug_{job.company.lower().replace(' ', '_')}_{job.title.lower().replace(' ', '_')}"
             debug_dir.mkdir(parents=True, exist_ok=True)
@@ -325,7 +336,7 @@ def cover_letter(
         click.echo(f"PDF saved: {output}")
         click.echo(f"TXT saved: {txt_path}")
     else:
-        pdf_path, txt_path = save_cover_letter(cl, first_name, last_name, job)
+        pdf_path, txt_path = save_cover_letter(cl, first_name, last_name, job, output_dir=output_dir)
         click.echo(f"PDF saved: {pdf_path}")
         click.echo(f"TXT saved: {txt_path}")
 
