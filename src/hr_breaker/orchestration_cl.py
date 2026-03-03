@@ -196,7 +196,7 @@ def save_cover_letter(
     cl_dir = output_dir if output_dir is not None else settings.output_dir / CL_OUTPUT_SUBDIR
 
     storage = PDFStorage(output_dir=cl_dir)
-    pdf_path = storage.generate_path(first_name, last_name, job.company, job.title)
+    pdf_path = storage.generate_path("CL", job.company)
 
     if not cl.pdf_bytes:
         raise ValueError("No PDF bytes to save")

@@ -10,6 +10,7 @@ Resume optimization and cover letter generation tool — transforms any resume i
 
 - **Any format in** - LaTeX, plain text, markdown, HTML, PDF
 - **Optimized PDF out** - Single-page, professionally formatted
+- **Editable HTML intermediate** - Saves `CV_<company>.html` alongside the PDF; edit and re-render without LLM
 - **LLM-powered optimization** - Tailors content to job requirements
 - **Minimal changes** - Preserves your content, only restructures for fit
 - **No fabrication** - Hallucination detection prevents made-up claims
@@ -28,7 +29,8 @@ Resume optimization and cover letter generation tool — transforms any resume i
 - **Auto role cleanup** - Job title domain suffixes stripped automatically (e.g. "Analyst – Offer Platform" → "Analyst")
 - **Clickable contacts** - Email and LinkedIn rendered as colored, underlined links
 - **Handwritten signature** - `Signature.png` from the project root is embedded automatically at the end
-- **PDF + TXT output** - Saved to `output/cl/` alongside the PDF
+- **Editable HTML intermediate** - Saves `CL_<company>.html` alongside PDF and TXT; edit and re-render without LLM
+- **PDF + TXT output** - Saved to `output/cl/`
 
 ### Shared
 
@@ -45,7 +47,9 @@ Resume optimization and cover letter generation tool — transforms any resume i
 3. LLM extracts content and generates optimized HTML resume
 4. System runs internal filters (ATS simulation, keyword matching, hallucination detection)
 5. If filters reject, regenerates using feedback
-6. When all checks pass, renders HTML→PDF via WeasyPrint
+6. When all checks pass, saves `CV_<company>.html` (editable) and renders to `CV_<company>.pdf`
+
+To tweak the result without re-running the LLM: edit the `.html` file, then run `render-cv`.
 
 ### Cover letter generation
 
@@ -54,7 +58,9 @@ Resume optimization and cover letter generation tool — transforms any resume i
 3. Structural, style, and word-count filters run in parallel
 4. LLM reviewer runs only if structural filters pass (saves API calls)
 5. If any filter rejects, regenerates with feedback
-6. Final output: PDF + plain-text file saved to `output/cl/`
+6. Saves `CL_<company>.html` (editable), `CL_<company>.pdf`, and `CL_<company>.txt` to `output/cl/`
+
+To tweak the result without re-running the LLM: edit the `.html` file, then run `render-cl`.
 
 ## Quick Start
 
@@ -89,6 +95,8 @@ uv run hr-breaker optimize resume.txt https://example.com/job
 
 # From job description file
 uv run hr-breaker optimize resume.txt job.txt
+# → output/CV_<company>.html  (editable)
+# → output/CV_<company>.pdf
 
 # Debug mode (saves iterations)
 uv run hr-breaker optimize resume.txt job.txt -d
@@ -105,6 +113,9 @@ uv run hr-breaker optimize resume.txt job.txt --no-shame
 # Save to a specific directory (auto-generated filename)
 uv run hr-breaker optimize resume.txt job.txt --output-dir /path/to/dir
 
+# Re-render PDF from edited HTML — no LLM calls
+uv run hr-breaker render-cv output/CV_company.html
+
 # List generated PDFs
 uv run hr-breaker list
 ```
@@ -117,6 +128,9 @@ uv run hr-breaker cover-letter resume.txt https://example.com/job
 
 # From job description file
 uv run hr-breaker cover-letter resume.txt job.txt
+# → output/cl/CL_<company>.html  (editable)
+# → output/cl/CL_<company>.pdf
+# → output/cl/CL_<company>.txt
 
 # Extra context - company research, things to highlight (treated as ground truth)
 uv run hr-breaker cover-letter resume.txt job.txt --info "They use dbt + Looker; mention my BI migration project"
@@ -129,14 +143,16 @@ uv run hr-breaker cover-letter resume.txt job.txt --no-shame
 
 # Save to a specific directory (auto-generated filename, no extra cl/ subdir)
 uv run hr-breaker cover-letter resume.txt job.txt --output-dir /path/to/dir
+
+# Re-render PDF+TXT from edited HTML — no LLM calls
+uv run hr-breaker render-cl output/cl/CL_company.html
 ```
 
 ## Output
 
-- Resume PDFs: `output/<name>_<company>_<role>.pdf`
-- Cover letters: `output/cl/<name>_<company>_<role>.pdf` + `.txt`
+- Resume: `output/CV_<company>.html` + `output/CV_<company>.pdf`
+- Cover letter: `output/cl/CL_<company>.html` + `.pdf` + `.txt`
 - Debug iterations: `output/debug_<company>_<role>/` (CV) or `output/cl/debug_<company>_<role>/` (CL)
-- Records: `output/index.json`
 
 ## Configuration
 

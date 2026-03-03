@@ -392,10 +392,7 @@ if clicked:
         # Save PDF and store results in session state
         pdf_path = None
         if optimized and optimized.pdf_bytes:
-            pdf_path = pdf_storage.generate_path(
-                source.first_name, source.last_name, job.company, job.title,
-                lang_code=selected_lang_code,
-            )
+            pdf_path = pdf_storage.generate_path("CV", job.company)
             pdf_path.parent.mkdir(parents=True, exist_ok=True)
             pdf_path.write_bytes(optimized.pdf_bytes)
 
@@ -500,10 +497,7 @@ if "last_result" in st.session_state:
                     # Save translated PDF
                     if translated.pdf_bytes:
                         source = st.session_state["source_resume"]
-                        tr_pdf_path = pdf_storage.generate_path(
-                            source.first_name, source.last_name, job.company, job.title,
-                            lang_code=translate_language.code,
-                        )
+                        tr_pdf_path = pdf_storage.generate_path("CV", job.company)
                         tr_pdf_path.parent.mkdir(parents=True, exist_ok=True)
                         tr_pdf_path.write_bytes(translated.pdf_bytes)
 

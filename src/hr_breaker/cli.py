@@ -193,16 +193,17 @@ def optimize(
 
     # Save final PDF (reuse bytes from last iteration)
     if output is None:
-        output = pdf_storage.generate_path(
-            first_name,
-            last_name,
-            job.company,
-            job.title,
-            lang_code=lang_code,
-        )
+        output = pdf_storage.generate_path("CV", job.company)
 
     if not optimized.pdf_bytes:
         raise click.ClickException("No PDF generated (render failed)")
+
+    # Save HTML body as editable file
+    html_path = output.with_suffix(".html")
+    if optimized.html:
+        html_path.write_text(optimized.html, encoding="utf-8")
+        click.echo(f"HTML saved: {html_path}")
+
     output.write_bytes(optimized.pdf_bytes)
 
     pdf_record = GeneratedPDF(
@@ -333,12 +334,95 @@ def cover_letter(
         output.write_bytes(cl.pdf_bytes)
         txt_path = output.with_suffix(".txt")
         txt_path.write_text(cl.txt_text or "", encoding="utf-8")
+        if cl.html:
+            html_path = output.with_suffix(".html")
+            html_path.write_text(cl.html, encoding="utf-8")
+            click.echo(f"HTML saved: {html_path}")
         click.echo(f"PDF saved: {output}")
         click.echo(f"TXT saved: {txt_path}")
     else:
         pdf_path, txt_path = save_cover_letter(cl, first_name, last_name, job, output_dir=output_dir)
+        if cl.html:
+            html_path = pdf_path.with_suffix(".html")
+            html_path.write_text(cl.html, encoding="utf-8")
+            click.echo(f"HTML saved: {html_path}")
         click.echo(f"PDF saved: {pdf_path}")
         click.echo(f"TXT saved: {txt_path}")
+
+
+@cli.command("render-cv")
+@click.argument("html_path", type=click.Path(exists=True, path_type=Path))
+@click.option(
+    "--output",
+    "-o",
+    type=click.Path(path_type=Path),
+    default=None,
+    help="Output PDF path (default: same name as input with .pdf extension)",
+)
+def render_cv(html_path: Path, output: Path | None):
+    """Render CV PDF from a saved HTML body file. No LLM calls.
+
+    HTML_PATH: Path to .html file saved by the optimize command
+    """
+    from hr_breaker.services.renderer import HTMLRenderer, RenderError
+
+    html_body = html_path.read_text(encoding="utf-8")
+
+    try:
+        renderer = HTMLRenderer()
+        result = renderer.render(html_body)
+    except RenderError as e:
+        raise click.ClickException(str(e))
+
+    if output is None:
+        output = html_path.with_suffix(".pdf")
+
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_bytes(result.pdf_bytes)
+
+    for w in result.warnings:
+        click.echo(f"Warning: {w}")
+    click.echo(f"PDF saved: {output}")
+
+
+@cli.command("render-cl")
+@click.argument("html_path", type=click.Path(exists=True, path_type=Path))
+@click.option(
+    "--output",
+    "-o",
+    type=click.Path(path_type=Path),
+    default=None,
+    help="Output PDF path (default: same name as input with .pdf extension)",
+)
+def render_cl(html_path: Path, output: Path | None):
+    """Render cover letter PDF from a saved HTML body file. No LLM calls.
+
+    HTML_PATH: Path to .html file saved by the cover-letter command
+    """
+    from hr_breaker.services.renderer import HTMLRenderer, RenderError
+    from hr_breaker.utils import extract_text_from_html
+
+    html_body = html_path.read_text(encoding="utf-8")
+
+    try:
+        renderer = HTMLRenderer(template_name="cl_wrapper.html")
+        result = renderer.render(html_body)
+    except RenderError as e:
+        raise click.ClickException(str(e))
+
+    if output is None:
+        output = html_path.with_suffix(".pdf")
+
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_bytes(result.pdf_bytes)
+
+    txt_path = output.with_suffix(".txt")
+    txt_path.write_text(extract_text_from_html(html_body), encoding="utf-8")
+
+    for w in result.warnings:
+        click.echo(f"Warning: {w}")
+    click.echo(f"PDF saved: {output}")
+    click.echo(f"TXT saved: {txt_path}")
 
 
 @cli.command("list")

@@ -15,7 +15,7 @@ Tool for optimizing resumes and generating cover letters for job postings, with 
    - Follows guidelines: one-page PDF, no misinformation, etc.
 4. System runs internal filters (LLM-based ATS simulation, keyword matching, hallucination detection, etc.)
 5. If filters reject, repeat from step 3 using feedback
-6. When all checks pass, render HTML→PDF via WeasyPrint and return
+6. When all checks pass, saves `CV_<company>.html` (editable HTML body) and renders to `CV_<company>.pdf`
 
 ### Cover letter generation
 
@@ -24,7 +24,7 @@ Tool for optimizing resumes and generating cover letters for job postings, with 
 3. Structural/style/word-count filters run in parallel
 4. LLM reviewer (`cl_reviewer`) runs only if structural filters pass
 5. If any filter rejects, regenerate with feedback
-6. Output: PDF + `.txt` plain-text saved to `output/cl/`
+6. Saves `CL_<company>.html` (editable), `CL_<company>.pdf`, and `CL_<company>.txt` to `output/cl/`
 
 ## Architecture
 
@@ -134,6 +134,11 @@ uv run hr-breaker optimize resume.txt job.txt --seq                  # sequentia
 uv run hr-breaker optimize resume.txt job.txt --no-shame             # massively relax lies/hallucination/AI checks (use with caution!)
 uv run hr-breaker optimize resume.txt job.txt --instructions "Focus on Python, add K8s cert"
 uv run hr-breaker optimize resume.txt job.txt --output-dir path/to/dir  # save to specific dir (auto filename); --output still takes a full path and wins over --output-dir
+# ^ saves both .html (HTML body, editable) and .pdf
+
+# CV re-render from saved HTML (no LLM)
+uv run hr-breaker render-cv output/CV_company.html           # renders .pdf alongside the .html
+uv run hr-breaker render-cv output/CV_company.html -o custom.pdf  # explicit output path
 
 # Cover letter generation
 uv run hr-breaker cover-letter resume.txt https://example.com/job
@@ -142,6 +147,11 @@ uv run hr-breaker cover-letter resume.txt job.txt --info "They use dbt + Looker;
 uv run hr-breaker cover-letter resume.txt job.txt -d                 # debug mode (saves HTML iterations)
 uv run hr-breaker cover-letter resume.txt job.txt --no-shame         # lenient hallucination mode
 uv run hr-breaker cover-letter resume.txt job.txt --output-dir path/to/dir  # save to specific dir (auto filename, no cl/ subdir); --output wins over --output-dir
+# ^ saves .html (editable), .pdf, and .txt
+
+# CL re-render from saved HTML (no LLM)
+uv run hr-breaker render-cl output/cl/CL_company.html      # renders .pdf and .txt alongside the .html
+uv run hr-breaker render-cl output/cl/CL_company.html -o custom.pdf  # explicit output path
 
 uv run hr-breaker list                                               # list generated PDFs
 
@@ -150,11 +160,11 @@ uv run pytest tests/
 ```
 
 ### Output
-- CV PDFs: `output/<name>_<company>_<role>.pdf`
-- Cover letters: `output/cl/<name>_<company>_<role>.pdf` + `.txt`
+- CV HTML: `output/CV_<company>.html` ← editable HTML body (saved alongside PDF)
+- CV PDFs: `output/CV_<company>.pdf`
+- Cover letters: `output/cl/CL_<company>.html` (editable) + `.pdf` + `.txt`
 - CV debug iterations: `output/debug_<company>_<role>/` (with -d flag)
 - CL debug iterations: `output/cl/debug_<company>_<role>/` (with -d flag)
-- Records: `output/index.json`
 
 ### Rendering
 - LLM generates HTML body → WeasyPrint renders to PDF
